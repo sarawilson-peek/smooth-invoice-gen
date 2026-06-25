@@ -94,6 +94,12 @@ export function saveInvoice(inv: Invoice) {
   localStorage.setItem(INVOICES_KEY, JSON.stringify(all));
 }
 
+export function deleteInvoice(id: string) {
+  if (!isBrowser()) return;
+  const all = loadInvoices().filter((i) => i.id !== id);
+  localStorage.setItem(INVOICES_KEY, JSON.stringify(all));
+}
+
 export function getInvoice(id: string): Invoice | undefined {
   return loadInvoices().find((i) => i.id === id);
 }

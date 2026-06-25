@@ -1,6 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { FileText, Settings as SettingsIcon, Plus, Upload, Receipt, Search } from "lucide-react";
+import { FileText, Settings as SettingsIcon, Plus, Upload, Receipt, Search, Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,6 +37,7 @@ import {
   formatMoney,
   newInvoiceId,
   newInvoiceNumber,
+  deleteInvoice,
   type Settings,
   type Invoice,
   type Booking,
@@ -176,12 +187,21 @@ function SettingsTab() {
 function InvoicesTab() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [open, setOpen] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<Invoice | null>(null);
 
   useEffect(() => {
     setInvoices(loadInvoices());
   }, []);
 
   const refresh = () => setInvoices(loadInvoices());
+
+  const confirmDelete = () => {
+    if (!pendingDelete) return;
+    deleteInvoice(pendingDelete.id);
+    toast.success(`Invoice ${pendingDelete.invoiceNumber} deleted`);
+    setPendingDelete(null);
+    refresh();
+  };
 
   return (
     <div>
@@ -223,9 +243,19 @@ function InvoicesTab() {
                 {invoices.map((inv) => (
                   <tr key={inv.id} className="border-b last:border-0 transition-colors hover:bg-muted/40">
                     <td className="px-4 py-3">
-                      <Link to="/invoice/$id" params={{ id: inv.id }} target="_blank" className="font-medium text-primary hover:underline">
-                        {inv.invoiceNumber}
-                      </Link>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setPendingDelete(inv)}
+                          className="text-muted-foreground transition-colors hover:text-destructive"
+                          aria-label={`Delete invoice ${inv.invoiceNumber}`}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                        <Link to="/invoice/$id" params={{ id: inv.id }} target="_blank" className="font-medium text-primary hover:underline">
+                          {inv.invoiceNumber}
+                        </Link>
+                      </div>
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">{new Date(inv.createdAt).toLocaleDateString()}</td>
                     <td className="px-4 py-3 text-muted-foreground">{new Date(inv.activityDate).toLocaleDateString()}</td>
@@ -241,6 +271,28 @@ function InvoicesTab() {
       </Card>
 
       <CreateInvoiceDialog open={open} onOpenChange={setOpen} onCreated={refresh} />
+
+      <AlertDialog open={!!pendingDelete} onOpenChange={(o) => !o && setPendingDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete invoice?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete invoice{" "}
+              <span className="font-medium text-foreground">{pendingDelete?.invoiceNumber}</span>
+              {pendingDelete ? ` for ${pendingDelete.customerName}` : ""}. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
