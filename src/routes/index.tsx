@@ -492,12 +492,23 @@ function CreateInvoiceDialog({
                     </tr>
                   </thead>
                   <tbody>
-                    <tr className="border-b last:border-0">
-                      <td className="px-4 py-3">{form.productName}</td>
-                      <td className="px-4 py-3 text-right">{formatMoney(form.ticketPrice)}</td>
-                      <td className="px-4 py-3 text-right">{form.ticketsQuantity}</td>
-                      <td className="px-4 py-3 text-right">{formatMoney(subtotal)}</td>
-                    </tr>
+                    {form.items && form.items.length > 0 ? (
+                      form.items.map((it, idx) => (
+                        <tr key={idx} className="border-b last:border-0">
+                          <td className="px-4 py-3">{it.name}</td>
+                          <td className="px-4 py-3 text-right">{formatMoney(it.price)}</td>
+                          <td className="px-4 py-3 text-right">{it.quantity}</td>
+                          <td className="px-4 py-3 text-right">{formatMoney(it.quantity * it.price)}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr className="border-b last:border-0">
+                        <td className="px-4 py-3">{form.productName}</td>
+                        <td className="px-4 py-3 text-right">{formatMoney(form.ticketPrice)}</td>
+                        <td className="px-4 py-3 text-right">{form.ticketsQuantity}</td>
+                        <td className="px-4 py-3 text-right">{formatMoney(subtotal)}</td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
                 <div className="border-t bg-muted/30 px-4 py-3">
