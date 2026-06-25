@@ -263,7 +263,10 @@ function InvoicesTab() {
                         </Link>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-muted-foreground">{new Date(inv.createdAt).toLocaleDateString()}</td>
+                    <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">
+                      {new Date(inv.createdAt).toLocaleString([], { year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground">{inv.createdBy || "—"}</td>
                     <td className="px-4 py-3 text-muted-foreground">{new Date(inv.activityDate).toLocaleDateString()}</td>
                     <td className="px-4 py-3">{inv.customerName}</td>
                     <td className="px-4 py-3">{inv.productName}</td>
