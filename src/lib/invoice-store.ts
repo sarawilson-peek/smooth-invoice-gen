@@ -6,6 +6,7 @@ export type Settings = {
   businessLogo: string; // data URL
   address: string;
   notes: string;
+  operatorName: string;
 };
 
 export type LineItem = {
@@ -31,6 +32,7 @@ export type Booking = {
 export type Invoice = {
   id: string;
   invoiceNumber: string;
+  createdBy?: string;
   createdAt: string;
   activityDate: string;
   bookingId: string;
@@ -64,6 +66,7 @@ export const defaultSettings: Settings = {
   businessLogo: "",
   address: "",
   notes: "",
+  operatorName: "",
 };
 
 const isBrowser = () => typeof window !== "undefined";

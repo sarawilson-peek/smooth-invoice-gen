@@ -143,6 +143,11 @@ function SettingsTab() {
           <Textarea id="addr" rows={3} value={s.address} onChange={(e) => update("address", e.target.value)} placeholder="123 Main St, Suite 200&#10;Springfield, IL 62701" />
         </div>
         <div className="space-y-2 md:col-span-2">
+          <Label htmlFor="op">Your name</Label>
+          <Input id="op" value={s.operatorName} onChange={(e) => update("operatorName", e.target.value)} placeholder="Jane Doe" />
+          <p className="text-xs text-muted-foreground">Recorded on each invoice you generate.</p>
+        </div>
+        <div className="space-y-2 md:col-span-2">
           <Label htmlFor="notes">Note to Customer</Label>
           <Textarea id="notes" rows={3} value={s.notes} onChange={(e) => update("notes", e.target.value)} placeholder="Thank you for your business! Payment due within 14 days." />
         </div>
@@ -233,6 +238,7 @@ function InvoicesTab() {
                 <tr>
                   <th className="px-4 py-3">Invoice #</th>
                   <th className="px-4 py-3">Created</th>
+                  <th className="px-4 py-3">User</th>
                   <th className="px-4 py-3">Activity date</th>
                   <th className="px-4 py-3">Customer</th>
                   <th className="px-4 py-3">Product</th>
@@ -257,7 +263,10 @@ function InvoicesTab() {
                         </Link>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-muted-foreground">{new Date(inv.createdAt).toLocaleDateString()}</td>
+                    <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">
+                      {new Date(inv.createdAt).toLocaleString([], { year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground">{inv.createdBy || "—"}</td>
                     <td className="px-4 py-3 text-muted-foreground">{new Date(inv.activityDate).toLocaleDateString()}</td>
                     <td className="px-4 py-3">{inv.customerName}</td>
                     <td className="px-4 py-3">{inv.productName}</td>
@@ -357,6 +366,7 @@ function CreateInvoiceDialog({
       id: newInvoiceId(),
       invoiceNumber: trimmedNumber,
       createdAt: new Date().toISOString(),
+      createdBy: biz.operatorName.trim() || undefined,
       activityDate: form.activityDate,
       bookingId: form.id,
       productName: form.productName,
