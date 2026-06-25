@@ -32,6 +32,7 @@ export type Booking = {
 export type Invoice = {
   id: string;
   invoiceNumber: string;
+  createdBy?: string;
   createdAt: string;
   activityDate: string;
   bookingId: string;
