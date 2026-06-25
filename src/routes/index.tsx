@@ -370,6 +370,7 @@ function CreateInvoiceDialog({
       taxesAndFees: form.taxesAndFees,
       total,
       amountDue,
+      items: form.items,
       business: {
         name: biz.businessName,
         id: biz.businessId,
