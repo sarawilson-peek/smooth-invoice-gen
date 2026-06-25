@@ -412,7 +412,7 @@ function CreateInvoiceDialog({
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                Demo IDs: BK-1001, BK-1002, BK-1003, BK-1004
+                Demo IDs: BK-1001, BK-1002, BK-1003, BK-1004, BK-1005
               </p>
             </div>
           </div>
