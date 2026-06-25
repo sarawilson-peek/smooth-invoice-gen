@@ -132,7 +132,7 @@ function SettingsTab() {
           <Textarea id="addr" rows={3} value={s.address} onChange={(e) => update("address", e.target.value)} placeholder="123 Main St, Suite 200&#10;Springfield, IL 62701" />
         </div>
         <div className="space-y-2 md:col-span-2">
-          <Label htmlFor="notes">Custom notes</Label>
+          <Label htmlFor="notes">Note to Customer</Label>
           <Textarea id="notes" rows={3} value={s.notes} onChange={(e) => update("notes", e.target.value)} placeholder="Thank you for your business! Payment due within 14 days." />
         </div>
         <div className="space-y-2 md:col-span-2">
