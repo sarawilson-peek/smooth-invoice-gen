@@ -243,9 +243,19 @@ function InvoicesTab() {
                 {invoices.map((inv) => (
                   <tr key={inv.id} className="border-b last:border-0 transition-colors hover:bg-muted/40">
                     <td className="px-4 py-3">
-                      <Link to="/invoice/$id" params={{ id: inv.id }} target="_blank" className="font-medium text-primary hover:underline">
-                        {inv.invoiceNumber}
-                      </Link>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setPendingDelete(inv)}
+                          className="text-muted-foreground transition-colors hover:text-destructive"
+                          aria-label={`Delete invoice ${inv.invoiceNumber}`}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                        <Link to="/invoice/$id" params={{ id: inv.id }} target="_blank" className="font-medium text-primary hover:underline">
+                          {inv.invoiceNumber}
+                        </Link>
+                      </div>
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">{new Date(inv.createdAt).toLocaleDateString()}</td>
                     <td className="px-4 py-3 text-muted-foreground">{new Date(inv.activityDate).toLocaleDateString()}</td>
