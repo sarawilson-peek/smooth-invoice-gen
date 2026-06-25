@@ -6,6 +6,7 @@ export type Settings = {
   businessLogo: string; // data URL
   address: string;
   notes: string;
+  operatorName: string;
 };
 
 export type LineItem = {
