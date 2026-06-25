@@ -239,8 +239,8 @@ function InvoicesTab() {
                   <th className="px-4 py-3">Invoice #</th>
                   <th className="px-4 py-3">Created</th>
                   <th className="px-4 py-3">User</th>
-                  <th className="px-4 py-3">Activity date</th>
                   <th className="px-4 py-3">Booking ID</th>
+                  <th className="px-4 py-3">Activity date</th>
                   <th className="px-4 py-3">Customer</th>
                   <th className="px-4 py-3">Product</th>
                   <th className="px-4 py-3 text-right">Tickets</th>
@@ -269,8 +269,8 @@ function InvoicesTab() {
                       {new Date(inv.createdAt).toLocaleString([], { year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">{inv.createdBy || "—"}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{new Date(inv.activityDate).toLocaleDateString()}</td>
                     <td className="px-4 py-3 text-muted-foreground">{inv.bookingId}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{new Date(inv.activityDate).toLocaleDateString()}</td>
                     <td className="px-4 py-3">{inv.customerName}</td>
                     <td className="px-4 py-3">{inv.productName}</td>
                     <td className="px-4 py-3 text-right">{inv.ticketsQuantity}</td>
