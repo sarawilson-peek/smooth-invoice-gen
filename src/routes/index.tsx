@@ -355,39 +355,43 @@ function CreateInvoiceDialog({
           </div>
         ) : form ? (
           <div className="space-y-6 py-2">
+            <div className="rounded-md border border-primary/30 bg-primary/5 px-3 py-2 text-sm text-foreground">
+              To change any of the booking details do this in Peek first.
+            </div>
             <section>
               <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                 Booking
               </h3>
               <div className="grid gap-3 sm:grid-cols-2">
                 <Field label="Product name">
-                  <Input value={form.productName} onChange={(e) => updateForm("productName", e.target.value)} />
+                  <Input value={form.productName} readOnly disabled />
                 </Field>
                 <Field label="Activity date">
-                  <Input type="date" value={form.activityDate} onChange={(e) => updateForm("activityDate", e.target.value)} />
+                  <Input type="date" value={form.activityDate} readOnly disabled />
                 </Field>
                 <Field label="Customer name">
-                  <Input value={form.customerName} onChange={(e) => updateForm("customerName", e.target.value)} />
+                  <Input value={form.customerName} readOnly disabled />
                 </Field>
                 <Field label="Customer phone">
-                  <Input value={form.customerPhone} onChange={(e) => updateForm("customerPhone", e.target.value)} />
+                  <Input value={form.customerPhone} readOnly disabled />
                 </Field>
                 <Field label="Customer email" className="sm:col-span-2">
-                  <Input type="email" value={form.customerEmail} onChange={(e) => updateForm("customerEmail", e.target.value)} />
+                  <Input type="email" value={form.customerEmail} readOnly disabled />
                 </Field>
                 <Field label="Tickets quantity">
-                  <Input type="number" min={0} value={form.ticketsQuantity} onChange={(e) => updateForm("ticketsQuantity", Number(e.target.value))} />
+                  <Input type="number" value={form.ticketsQuantity} readOnly disabled />
                 </Field>
                 <Field label="Ticket price">
-                  <Input type="number" min={0} step="0.01" value={form.ticketPrice} onChange={(e) => updateForm("ticketPrice", Number(e.target.value))} />
+                  <Input type="number" value={form.ticketPrice} readOnly disabled />
                 </Field>
                 <Field label="Taxes & fees">
-                  <Input type="number" min={0} step="0.01" value={form.taxesAndFees} onChange={(e) => updateForm("taxesAndFees", Number(e.target.value))} />
+                  <Input type="number" value={form.taxesAndFees} readOnly disabled />
                 </Field>
                 <Field label="Amount paid">
-                  <Input type="number" min={0} step="0.01" value={form.amountPaid} onChange={(e) => updateForm("amountPaid", Number(e.target.value))} />
+                  <Input type="number" value={form.amountPaid} readOnly disabled />
                 </Field>
               </div>
+
 
               <div className="mt-4 rounded-lg border bg-muted/40 p-4">
                 <Row label="Subtotal" value={formatMoney(subtotal)} />
