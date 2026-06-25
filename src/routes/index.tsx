@@ -368,18 +368,11 @@ function CreateInvoiceDialog({
                 Invoice
               </h3>
               <div className="grid gap-3 sm:grid-cols-2">
-                <Field label="Invoice number">
+                <Field label="Invoice number" className="sm:col-span-2">
                   <Input
                     value={invoiceNumber}
                     onChange={(e) => setInvoiceNumber(e.target.value)}
                     placeholder="INV-202606-1234"
-                  />
-                </Field>
-                <Field label="Organization name (optional)">
-                  <Input
-                    value={organizationName}
-                    onChange={(e) => setOrganizationName(e.target.value)}
-                    placeholder="Acme Corp."
                   />
                 </Field>
               </div>
@@ -387,15 +380,9 @@ function CreateInvoiceDialog({
 
             <section>
               <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                Booking
+                Customer
               </h3>
               <div className="grid gap-3 sm:grid-cols-2">
-                <Field label="Product name" className="sm:col-span-2">
-                  <Input value={form.productName} readOnly disabled />
-                </Field>
-                <Field label="Activity date">
-                  <Input type="date" value={form.activityDate} readOnly disabled />
-                </Field>
                 <Field label="Customer name">
                   <Input value={form.customerName} readOnly disabled />
                 </Field>
@@ -405,15 +392,37 @@ function CreateInvoiceDialog({
                 <Field label="Customer phone">
                   <Input value={form.customerPhone} readOnly disabled />
                 </Field>
+                <Field label="Organization name (optional)">
+                  <Input
+                    value={organizationName}
+                    onChange={(e) => setOrganizationName(e.target.value)}
+                    placeholder="Acme Corp."
+                  />
+                </Field>
+                <Field label="Note to Customer" className="sm:col-span-2">
+                  <Textarea
+                    rows={3}
+                    value={biz.notes}
+                    onChange={(e) => updateBiz("notes", e.target.value)}
+                    placeholder="Thank you for your business!"
+                  />
+                </Field>
               </div>
             </section>
 
-
             <section>
               <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                Charges
+                Booking Details
               </h3>
-              <div className="overflow-hidden rounded-lg border">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field label="Product name">
+                  <Input value={form.productName} readOnly disabled />
+                </Field>
+                <Field label="Activity date">
+                  <Input type="date" value={form.activityDate} readOnly disabled />
+                </Field>
+              </div>
+              <div className="mt-3 overflow-hidden rounded-lg border">
                 <table className="w-full text-sm">
                   <thead className="bg-primary text-primary-foreground">
                     <tr className="text-left">
@@ -442,16 +451,6 @@ function CreateInvoiceDialog({
               </div>
             </section>
 
-            <section>
-              <Field label="Note to Customer">
-                <Textarea
-                  rows={3}
-                  value={biz.notes}
-                  onChange={(e) => updateBiz("notes", e.target.value)}
-                  placeholder="Thank you for your business!"
-                />
-              </Field>
-            </section>
 
           </div>
         ) : null}
