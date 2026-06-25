@@ -66,6 +66,7 @@ export const defaultSettings: Settings = {
   businessLogo: "",
   address: "",
   notes: "",
+  operatorName: "",
 };
 
 const isBrowser = () => typeof window !== "undefined";
