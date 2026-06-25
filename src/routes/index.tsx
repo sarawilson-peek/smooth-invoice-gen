@@ -365,6 +365,28 @@ function CreateInvoiceDialog({
             </div>
             <section>
               <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                Invoice
+              </h3>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field label="Invoice number">
+                  <Input
+                    value={invoiceNumber}
+                    onChange={(e) => setInvoiceNumber(e.target.value)}
+                    placeholder="INV-202606-1234"
+                  />
+                </Field>
+                <Field label="Organization name (optional)">
+                  <Input
+                    value={organizationName}
+                    onChange={(e) => setOrganizationName(e.target.value)}
+                    placeholder="Acme Corp."
+                  />
+                </Field>
+              </div>
+            </section>
+
+            <section>
+              <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                 Booking
               </h3>
               <div className="grid gap-3 sm:grid-cols-2">
@@ -385,6 +407,7 @@ function CreateInvoiceDialog({
                 </Field>
               </div>
             </section>
+
 
             <section>
               <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
