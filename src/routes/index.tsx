@@ -323,6 +323,7 @@ function CreateInvoiceDialog({
   const [biz, setBiz] = useState<Settings>(defaultSettings);
   const [invoiceNumber, setInvoiceNumber] = useState("");
   const [organizationName, setOrganizationName] = useState("");
+  const [duplicateWarning, setDuplicateWarning] = useState<{ booking: Booking; existing: Invoice[] } | null>(null);
 
   useEffect(() => {
     if (open) {
@@ -332,8 +333,14 @@ function CreateInvoiceDialog({
       setBiz(loadSettings());
       setInvoiceNumber(newInvoiceNumber());
       setOrganizationName("");
+      setDuplicateWarning(null);
     }
   }, [open]);
+
+  const proceedWithBooking = (b: Booking) => {
+    setBooking(b);
+    setForm({ ...b });
+  };
 
   const handleSelectBooking = () => {
     const b = findBooking(bookingIdInput);
@@ -341,8 +348,12 @@ function CreateInvoiceDialog({
       toast.error("No booking found. Try BK-1001 – BK-1005.");
       return;
     }
-    setBooking(b);
-    setForm({ ...b });
+    const existing = loadInvoices().filter((i) => i.bookingId === b.id);
+    if (existing.length > 0) {
+      setDuplicateWarning({ booking: b, existing });
+      return;
+    }
+    proceedWithBooking(b);
   };
 
   const subtotal = useMemo(() => {
@@ -544,6 +555,36 @@ function CreateInvoiceDialog({
           )}
         </DialogFooter>
       </DialogContent>
+
+      <AlertDialog open={!!duplicateWarning} onOpenChange={(o) => !o && setDuplicateWarning(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Invoice already exists</AlertDialogTitle>
+            <AlertDialogDescription>
+              {duplicateWarning && (
+                <>
+                  Booking{" "}
+                  <span className="font-medium text-foreground">{duplicateWarning.booking.id}</span>{" "}
+                  already has {duplicateWarning.existing.length}{" "}
+                  {duplicateWarning.existing.length === 1 ? "invoice" : "invoices"} (
+                  {duplicateWarning.existing.map((i) => i.invoiceNumber).join(", ")}). Would you like to create another one?
+                </>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Go back</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (duplicateWarning) proceedWithBooking(duplicateWarning.booking);
+                setDuplicateWarning(null);
+              }}
+            >
+              Proceed anyway
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 }
