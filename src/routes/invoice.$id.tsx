@@ -76,7 +76,12 @@ function InvoicePage() {
           <section className="mt-6 grid grid-cols-2 gap-6 text-sm">
             <div>
               <p className="mb-1 text-xs uppercase tracking-wider text-muted-foreground">Bill to</p>
-              <p className="font-medium">{inv.customerName}</p>
+              {inv.organizationName && (
+                <p className="font-medium">{inv.organizationName}</p>
+              )}
+              <p className={inv.organizationName ? "text-muted-foreground" : "font-medium"}>
+                {inv.customerName}
+              </p>
               <p className="text-muted-foreground">{inv.customerEmail}</p>
               <p className="text-muted-foreground">{inv.customerPhone}</p>
             </div>
@@ -91,18 +96,19 @@ function InvoicePage() {
 
           {/* Line items */}
           <section className="mt-8">
+            <h2 className="mb-3 text-base font-semibold">{inv.productName}</h2>
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b text-left text-xs uppercase tracking-wider text-muted-foreground">
-                  <th className="py-2">Description</th>
+                  <th className="py-2">Ticket</th>
                   <th className="py-2 text-right">Qty</th>
                   <th className="py-2 text-right">Price</th>
-                  <th className="py-2 text-right">Amount</th>
+                  <th className="py-2 text-right">Total</th>
                 </tr>
               </thead>
               <tbody>
                 <tr className="border-b">
-                  <td className="py-3">{inv.productName}</td>
+                  <td className="py-3">Ticket</td>
                   <td className="py-3 text-right">{inv.ticketsQuantity}</td>
                   <td className="py-3 text-right">{formatMoney(inv.ticketPrice)}</td>
                   <td className="py-3 text-right">{formatMoney(inv.subtotal)}</td>
@@ -110,6 +116,7 @@ function InvoicePage() {
               </tbody>
             </table>
           </section>
+
 
           {/* Totals */}
           <section className="mt-6 flex justify-end">

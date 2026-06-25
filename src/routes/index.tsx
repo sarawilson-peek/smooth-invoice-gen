@@ -260,6 +260,8 @@ function CreateInvoiceDialog({
   const [booking, setBooking] = useState<Booking | null>(null);
   const [form, setForm] = useState<Booking | null>(null);
   const [biz, setBiz] = useState<Settings>(defaultSettings);
+  const [invoiceNumber, setInvoiceNumber] = useState("");
+  const [organizationName, setOrganizationName] = useState("");
 
   useEffect(() => {
     if (open) {
@@ -267,6 +269,8 @@ function CreateInvoiceDialog({
       setBooking(null);
       setForm(null);
       setBiz(loadSettings());
+      setInvoiceNumber(newInvoiceNumber());
+      setOrganizationName("");
     }
   }, [open]);
 
@@ -290,13 +294,15 @@ function CreateInvoiceDialog({
 
   const handleGenerate = () => {
     if (!form) return;
+    const trimmedNumber = invoiceNumber.trim() || newInvoiceNumber();
     const inv: Invoice = {
       id: newInvoiceId(),
-      invoiceNumber: newInvoiceNumber(),
+      invoiceNumber: trimmedNumber,
       createdAt: new Date().toISOString(),
       activityDate: form.activityDate,
       bookingId: form.id,
       productName: form.productName,
+      organizationName: organizationName.trim() || undefined,
       customerName: form.customerName,
       customerEmail: form.customerEmail,
       customerPhone: form.customerPhone,
@@ -319,6 +325,7 @@ function CreateInvoiceDialog({
     onCreated();
     onOpenChange(false);
   };
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -358,6 +365,28 @@ function CreateInvoiceDialog({
             </div>
             <section>
               <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                Invoice
+              </h3>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field label="Invoice number">
+                  <Input
+                    value={invoiceNumber}
+                    onChange={(e) => setInvoiceNumber(e.target.value)}
+                    placeholder="INV-202606-1234"
+                  />
+                </Field>
+                <Field label="Organization name (optional)">
+                  <Input
+                    value={organizationName}
+                    onChange={(e) => setOrganizationName(e.target.value)}
+                    placeholder="Acme Corp."
+                  />
+                </Field>
+              </div>
+            </section>
+
+            <section>
+              <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                 Booking
               </h3>
               <div className="grid gap-3 sm:grid-cols-2">
@@ -378,6 +407,7 @@ function CreateInvoiceDialog({
                 </Field>
               </div>
             </section>
+
 
             <section>
               <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">

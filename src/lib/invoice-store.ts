@@ -28,6 +28,7 @@ export type Invoice = {
   activityDate: string;
   bookingId: string;
   productName: string;
+  organizationName?: string;
   customerName: string;
   customerEmail: string;
   customerPhone: string;
