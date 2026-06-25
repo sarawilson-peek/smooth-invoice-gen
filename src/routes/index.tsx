@@ -362,6 +362,7 @@ function CreateInvoiceDialog({
       id: newInvoiceId(),
       invoiceNumber: trimmedNumber,
       createdAt: new Date().toISOString(),
+      createdBy: biz.operatorName.trim() || undefined,
       activityDate: form.activityDate,
       bookingId: form.id,
       productName: form.productName,
