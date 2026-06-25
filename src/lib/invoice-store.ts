@@ -162,6 +162,23 @@ export const mockBookings: Booking[] = [
     taxesAndFees: 18.5,
     amountPaid: 100,
   },
+  {
+    id: "BK-1005",
+    productName: "Coastal Kayak Expedition",
+    activityDate: "2026-08-18",
+    customerName: "Sofia Ramirez",
+    customerEmail: "sofia.r@example.com",
+    customerPhone: "+1 (305) 555-0177",
+    ticketsQuantity: 15,
+    ticketPrice: 0,
+    taxesAndFees: 62.5,
+    amountPaid: 200,
+    items: [
+      { name: "Adult ticket", quantity: 10, price: 75 },
+      { name: "Child ticket", quantity: 5, price: 45 },
+      { name: "Water bottle", quantity: 4, price: 6 },
+    ],
+  },
 ];
 
 export function findBooking(id: string): Booking | undefined {
