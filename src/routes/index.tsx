@@ -187,12 +187,21 @@ function SettingsTab() {
 function InvoicesTab() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [open, setOpen] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<Invoice | null>(null);
 
   useEffect(() => {
     setInvoices(loadInvoices());
   }, []);
 
   const refresh = () => setInvoices(loadInvoices());
+
+  const confirmDelete = () => {
+    if (!pendingDelete) return;
+    deleteInvoice(pendingDelete.id);
+    toast.success(`Invoice ${pendingDelete.invoiceNumber} deleted`);
+    setPendingDelete(null);
+    refresh();
+  };
 
   return (
     <div>
