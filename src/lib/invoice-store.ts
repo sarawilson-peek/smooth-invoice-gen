@@ -8,6 +8,12 @@ export type Settings = {
   notes: string;
 };
 
+export type LineItem = {
+  name: string;
+  quantity: number;
+  price: number;
+};
+
 export type Booking = {
   id: string;
   productName: string;
@@ -19,6 +25,7 @@ export type Booking = {
   ticketPrice: number;
   taxesAndFees: number;
   amountPaid: number;
+  items?: LineItem[];
 };
 
 export type Invoice = {
@@ -38,6 +45,7 @@ export type Invoice = {
   taxesAndFees: number;
   total: number;
   amountDue: number;
+  items?: LineItem[];
   business: {
     name: string;
     id: string;
@@ -153,6 +161,23 @@ export const mockBookings: Booking[] = [
     ticketPrice: 220,
     taxesAndFees: 18.5,
     amountPaid: 100,
+  },
+  {
+    id: "BK-1005",
+    productName: "Coastal Kayak Expedition",
+    activityDate: "2026-08-18",
+    customerName: "Sofia Ramirez",
+    customerEmail: "sofia.r@example.com",
+    customerPhone: "+1 (305) 555-0177",
+    ticketsQuantity: 15,
+    ticketPrice: 0,
+    taxesAndFees: 62.5,
+    amountPaid: 200,
+    items: [
+      { name: "Adult ticket", quantity: 10, price: 75 },
+      { name: "Child ticket", quantity: 5, price: 45 },
+      { name: "Water bottle", quantity: 4, price: 6 },
+    ],
   },
 ];
 

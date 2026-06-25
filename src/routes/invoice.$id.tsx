@@ -107,12 +107,23 @@ function InvoicePage() {
                 </tr>
               </thead>
               <tbody>
-                <tr className="border-b">
-                  <td className="py-3">Ticket</td>
-                  <td className="py-3 text-right">{inv.ticketsQuantity}</td>
-                  <td className="py-3 text-right">{formatMoney(inv.ticketPrice)}</td>
-                  <td className="py-3 text-right">{formatMoney(inv.subtotal)}</td>
-                </tr>
+                {inv.items && inv.items.length > 0 ? (
+                  inv.items.map((it, idx) => (
+                    <tr key={idx} className="border-b">
+                      <td className="py-3">{it.name}</td>
+                      <td className="py-3 text-right">{it.quantity}</td>
+                      <td className="py-3 text-right">{formatMoney(it.price)}</td>
+                      <td className="py-3 text-right">{formatMoney(it.quantity * it.price)}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr className="border-b">
+                    <td className="py-3">Ticket</td>
+                    <td className="py-3 text-right">{inv.ticketsQuantity}</td>
+                    <td className="py-3 text-right">{formatMoney(inv.ticketPrice)}</td>
+                    <td className="py-3 text-right">{formatMoney(inv.subtotal)}</td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </section>

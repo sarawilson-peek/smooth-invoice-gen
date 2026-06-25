@@ -329,14 +329,20 @@ function CreateInvoiceDialog({
   const handleSelectBooking = () => {
     const b = findBooking(bookingIdInput);
     if (!b) {
-      toast.error("No booking found. Try BK-1001, BK-1002, BK-1003, or BK-1004.");
+      toast.error("No booking found. Try BK-1001 – BK-1005.");
       return;
     }
     setBooking(b);
     setForm({ ...b });
   };
 
-  const subtotal = useMemo(() => (form ? form.ticketsQuantity * form.ticketPrice : 0), [form]);
+  const subtotal = useMemo(() => {
+    if (!form) return 0;
+    if (form.items && form.items.length > 0) {
+      return form.items.reduce((s, it) => s + it.quantity * it.price, 0);
+    }
+    return form.ticketsQuantity * form.ticketPrice;
+  }, [form]);
   const total = useMemo(() => (form ? subtotal + form.taxesAndFees : 0), [form, subtotal]);
   const amountDue = useMemo(() => (form ? Math.max(total - form.amountPaid, 0) : 0), [form, total]);
 
@@ -364,6 +370,7 @@ function CreateInvoiceDialog({
       taxesAndFees: form.taxesAndFees,
       total,
       amountDue,
+      items: form.items,
       business: {
         name: biz.businessName,
         id: biz.businessId,
@@ -406,7 +413,7 @@ function CreateInvoiceDialog({
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                Demo IDs: BK-1001, BK-1002, BK-1003, BK-1004
+                Demo IDs: BK-1001, BK-1002, BK-1003, BK-1004, BK-1005
               </p>
             </div>
           </div>
@@ -485,12 +492,23 @@ function CreateInvoiceDialog({
                     </tr>
                   </thead>
                   <tbody>
-                    <tr className="border-b last:border-0">
-                      <td className="px-4 py-3">{form.productName}</td>
-                      <td className="px-4 py-3 text-right">{formatMoney(form.ticketPrice)}</td>
-                      <td className="px-4 py-3 text-right">{form.ticketsQuantity}</td>
-                      <td className="px-4 py-3 text-right">{formatMoney(subtotal)}</td>
-                    </tr>
+                    {form.items && form.items.length > 0 ? (
+                      form.items.map((it, idx) => (
+                        <tr key={idx} className="border-b last:border-0">
+                          <td className="px-4 py-3">{it.name}</td>
+                          <td className="px-4 py-3 text-right">{formatMoney(it.price)}</td>
+                          <td className="px-4 py-3 text-right">{it.quantity}</td>
+                          <td className="px-4 py-3 text-right">{formatMoney(it.quantity * it.price)}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr className="border-b last:border-0">
+                        <td className="px-4 py-3">{form.productName}</td>
+                        <td className="px-4 py-3 text-right">{formatMoney(form.ticketPrice)}</td>
+                        <td className="px-4 py-3 text-right">{form.ticketsQuantity}</td>
+                        <td className="px-4 py-3 text-right">{formatMoney(subtotal)}</td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
                 <div className="border-t bg-muted/30 px-4 py-3">
