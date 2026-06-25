@@ -45,6 +45,7 @@ export type Invoice = {
   taxesAndFees: number;
   total: number;
   amountDue: number;
+  items?: LineItem[];
   business: {
     name: string;
     id: string;
