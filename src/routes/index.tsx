@@ -555,6 +555,36 @@ function CreateInvoiceDialog({
           )}
         </DialogFooter>
       </DialogContent>
+
+      <AlertDialog open={!!duplicateWarning} onOpenChange={(o) => !o && setDuplicateWarning(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Invoice already exists</AlertDialogTitle>
+            <AlertDialogDescription>
+              {duplicateWarning && (
+                <>
+                  Booking{" "}
+                  <span className="font-medium text-foreground">{duplicateWarning.booking.id}</span>{" "}
+                  already has {duplicateWarning.existing.length}{" "}
+                  {duplicateWarning.existing.length === 1 ? "invoice" : "invoices"} (
+                  {duplicateWarning.existing.map((i) => i.invoiceNumber).join(", ")}). Would you like to create another one?
+                </>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Go back</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (duplicateWarning) proceedWithBooking(duplicateWarning.booking);
+                setDuplicateWarning(null);
+              }}
+            >
+              Proceed anyway
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 }
