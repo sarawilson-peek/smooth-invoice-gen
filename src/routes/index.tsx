@@ -132,7 +132,7 @@ function SettingsTab() {
           <Textarea id="addr" rows={3} value={s.address} onChange={(e) => update("address", e.target.value)} placeholder="123 Main St, Suite 200&#10;Springfield, IL 62701" />
         </div>
         <div className="space-y-2 md:col-span-2">
-          <Label htmlFor="notes">Custom notes</Label>
+          <Label htmlFor="notes">Note to Customer</Label>
           <Textarea id="notes" rows={3} value={s.notes} onChange={(e) => update("notes", e.target.value)} placeholder="Thank you for your business! Payment due within 14 days." />
         </div>
         <div className="space-y-2 md:col-span-2">
@@ -361,7 +361,7 @@ function CreateInvoiceDialog({
                 Booking
               </h3>
               <div className="grid gap-3 sm:grid-cols-2">
-                <Field label="Product name">
+                <Field label="Product name" className="sm:col-span-2">
                   <Input value={form.productName} readOnly disabled />
                 </Field>
                 <Field label="Activity date">
@@ -370,54 +370,59 @@ function CreateInvoiceDialog({
                 <Field label="Customer name">
                   <Input value={form.customerName} readOnly disabled />
                 </Field>
+                <Field label="Customer email">
+                  <Input type="email" value={form.customerEmail} readOnly disabled />
+                </Field>
                 <Field label="Customer phone">
                   <Input value={form.customerPhone} readOnly disabled />
                 </Field>
-                <Field label="Customer email" className="sm:col-span-2">
-                  <Input type="email" value={form.customerEmail} readOnly disabled />
-                </Field>
-                <Field label="Tickets quantity">
-                  <Input type="number" value={form.ticketsQuantity} readOnly disabled />
-                </Field>
-                <Field label="Ticket price">
-                  <Input type="number" value={form.ticketPrice} readOnly disabled />
-                </Field>
-                <Field label="Taxes & fees">
-                  <Input type="number" value={form.taxesAndFees} readOnly disabled />
-                </Field>
-                <Field label="Amount paid">
-                  <Input type="number" value={form.amountPaid} readOnly disabled />
-                </Field>
-              </div>
-
-
-              <div className="mt-4 rounded-lg border bg-muted/40 p-4">
-                <Row label="Subtotal" value={formatMoney(subtotal)} />
-                <Row label="Taxes & fees" value={formatMoney(form.taxesAndFees)} />
-                <Row label="Total" value={formatMoney(total)} strong />
-                <Row label="Amount due" value={formatMoney(amountDue)} accent />
               </div>
             </section>
 
             <section>
               <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                Business details (override for this invoice)
+                Charges
               </h3>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <Field label="Business name">
-                  <Input value={biz.businessName} onChange={(e) => updateBiz("businessName", e.target.value)} />
-                </Field>
-                <Field label="Business ID">
-                  <Input value={biz.businessId} onChange={(e) => updateBiz("businessId", e.target.value)} />
-                </Field>
-                <Field label="Address" className="sm:col-span-2">
-                  <Textarea rows={2} value={biz.address} onChange={(e) => updateBiz("address", e.target.value)} />
-                </Field>
-                <Field label="Notes" className="sm:col-span-2">
-                  <Textarea rows={2} value={biz.notes} onChange={(e) => updateBiz("notes", e.target.value)} />
-                </Field>
+              <div className="overflow-hidden rounded-lg border">
+                <table className="w-full text-sm">
+                  <thead className="bg-primary text-primary-foreground">
+                    <tr className="text-left">
+                      <th className="px-4 py-2 font-medium">Ticket Type</th>
+                      <th className="px-4 py-2 text-right font-medium">Price</th>
+                      <th className="px-4 py-2 text-right font-medium">Quantity</th>
+                      <th className="px-4 py-2 text-right font-medium">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-b last:border-0">
+                      <td className="px-4 py-3">{form.productName}</td>
+                      <td className="px-4 py-3 text-right">{formatMoney(form.ticketPrice)}</td>
+                      <td className="px-4 py-3 text-right">{form.ticketsQuantity}</td>
+                      <td className="px-4 py-3 text-right">{formatMoney(subtotal)}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div className="border-t bg-muted/30 px-4 py-3">
+                  <Row label="Subtotal" value={formatMoney(subtotal)} />
+                  <Row label="Taxes & fees" value={formatMoney(form.taxesAndFees)} />
+                  <Row label="Total" value={formatMoney(total)} strong />
+                  <Row label="Amount paid" value={formatMoney(form.amountPaid)} />
+                  <Row label="Amount due" value={formatMoney(amountDue)} accent />
+                </div>
               </div>
             </section>
+
+            <section>
+              <Field label="Note to Customer">
+                <Textarea
+                  rows={3}
+                  value={biz.notes}
+                  onChange={(e) => updateBiz("notes", e.target.value)}
+                  placeholder="Thank you for your business!"
+                />
+              </Field>
+            </section>
+
           </div>
         ) : null}
 
