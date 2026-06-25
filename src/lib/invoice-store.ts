@@ -8,6 +8,12 @@ export type Settings = {
   notes: string;
 };
 
+export type LineItem = {
+  name: string;
+  quantity: number;
+  price: number;
+};
+
 export type Booking = {
   id: string;
   productName: string;
@@ -19,6 +25,7 @@ export type Booking = {
   ticketPrice: number;
   taxesAndFees: number;
   amountPaid: number;
+  items?: LineItem[];
 };
 
 export type Invoice = {
