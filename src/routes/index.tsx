@@ -270,8 +270,10 @@ function InvoicesTab() {
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">{inv.createdBy || "—"}</td>
                     <td className="px-4 py-3 text-muted-foreground">{new Date(inv.activityDate).toLocaleDateString()}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{inv.bookingId}</td>
                     <td className="px-4 py-3">{inv.customerName}</td>
                     <td className="px-4 py-3">{inv.productName}</td>
+                    <td className="px-4 py-3 text-right">{inv.ticketsQuantity}</td>
                     <td className="px-4 py-3 text-right font-medium">{formatMoney(inv.total)}</td>
                   </tr>
                 ))}
