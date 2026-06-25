@@ -329,14 +329,20 @@ function CreateInvoiceDialog({
   const handleSelectBooking = () => {
     const b = findBooking(bookingIdInput);
     if (!b) {
-      toast.error("No booking found. Try BK-1001, BK-1002, BK-1003, or BK-1004.");
+      toast.error("No booking found. Try BK-1001 – BK-1005.");
       return;
     }
     setBooking(b);
     setForm({ ...b });
   };
 
-  const subtotal = useMemo(() => (form ? form.ticketsQuantity * form.ticketPrice : 0), [form]);
+  const subtotal = useMemo(() => {
+    if (!form) return 0;
+    if (form.items && form.items.length > 0) {
+      return form.items.reduce((s, it) => s + it.quantity * it.price, 0);
+    }
+    return form.ticketsQuantity * form.ticketPrice;
+  }, [form]);
   const total = useMemo(() => (form ? subtotal + form.taxesAndFees : 0), [form, subtotal]);
   const amountDue = useMemo(() => (form ? Math.max(total - form.amountPaid, 0) : 0), [form, total]);
 
