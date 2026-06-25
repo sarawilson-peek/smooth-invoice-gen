@@ -37,6 +37,7 @@ import {
   formatMoney,
   newInvoiceId,
   newInvoiceNumber,
+  deleteInvoice,
   type Settings,
   type Invoice,
   type Booking,
