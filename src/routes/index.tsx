@@ -284,8 +284,6 @@ function CreateInvoiceDialog({
   const total = useMemo(() => (form ? subtotal + form.taxesAndFees : 0), [form, subtotal]);
   const amountDue = useMemo(() => (form ? Math.max(total - form.amountPaid, 0) : 0), [form, total]);
 
-  const updateForm = <K extends keyof Booking>(k: K, v: Booking[K]) =>
-    setForm((prev) => (prev ? { ...prev, [k]: v } : prev));
 
   const updateBiz = <K extends keyof Settings>(k: K, v: Settings[K]) =>
     setBiz((prev) => ({ ...prev, [k]: v }));
