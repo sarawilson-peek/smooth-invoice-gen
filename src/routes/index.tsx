@@ -389,11 +389,15 @@ function CreateInvoiceDialog({
         ) : null}
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-          {booking && (
-            <Button onClick={handleGenerate}>Generate</Button>
+          {generated ? (
+            <Button onClick={() => onOpenChange(false)}>Done</Button>
+          ) : (
+            <>
+              <Button variant="outline" onClick={() => onOpenChange(false)}>
+                Cancel
+              </Button>
+              {booking && <Button onClick={handleGenerate}>Generate</Button>}
+            </>
           )}
         </DialogFooter>
       </DialogContent>
