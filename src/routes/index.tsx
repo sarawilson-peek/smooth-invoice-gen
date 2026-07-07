@@ -80,122 +80,18 @@ function Home() {
 /* ---------------- Invoices ---------------- */
 
 function InvoicesTab() {
-  const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [open, setOpen] = useState(false);
-  const [pendingDelete, setPendingDelete] = useState<Invoice | null>(null);
-
-  useEffect(() => {
-    setInvoices(loadInvoices());
-  }, []);
-
-  const refresh = () => setInvoices(loadInvoices());
-
-  const confirmDelete = () => {
-    if (!pendingDelete) return;
-    deleteInvoice(pendingDelete.id);
-    toast.success(`Invoice ${pendingDelete.invoiceNumber} deleted`);
-    setPendingDelete(null);
-    refresh();
-  };
 
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-semibold">Invoices</h2>
-          <p className="text-sm text-muted-foreground">
-            {invoices.length} {invoices.length === 1 ? "invoice" : "invoices"} created
-          </p>
-        </div>
+        <h2 className="text-xl font-semibold">Invoices</h2>
         <Button onClick={() => setOpen(true)}>
           <Plus className="mr-2 h-4 w-4" /> Create invoice
         </Button>
       </div>
 
-      <Card>
-        {invoices.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-muted">
-              <FileText className="h-6 w-6 text-muted-foreground" />
-            </div>
-            <p className="font-medium">No invoices yet</p>
-            <p className="text-sm text-muted-foreground">Create your first invoice from a booking.</p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="border-b text-left text-xs uppercase text-muted-foreground">
-                <tr>
-                  <th className="px-4 py-3">Invoice #</th>
-                  <th className="px-4 py-3">Created</th>
-                  <th className="px-4 py-3">User</th>
-                  <th className="px-4 py-3">Booking ID</th>
-                  <th className="px-4 py-3">Activity date</th>
-                  <th className="px-4 py-3">Customer</th>
-                  <th className="px-4 py-3">Product</th>
-                  <th className="px-4 py-3 text-right">Tickets</th>
-                  <th className="px-4 py-3 text-right">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {invoices.map((inv) => (
-                  <tr key={inv.id} className="border-b last:border-0 transition-colors hover:bg-muted/40">
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => setPendingDelete(inv)}
-                          className="text-muted-foreground transition-colors hover:text-destructive"
-                          aria-label={`Delete invoice ${inv.invoiceNumber}`}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                        <Link to="/invoice/$id" params={{ id: inv.id }} target="_blank" className="font-medium text-primary hover:underline">
-                          {inv.invoiceNumber}
-                        </Link>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">
-                      {new Date(inv.createdAt).toLocaleString([], { year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground">{inv.createdBy || "—"}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{inv.bookingId}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{new Date(inv.activityDate).toLocaleDateString()}</td>
-                    <td className="px-4 py-3">{inv.customerName}</td>
-                    <td className="px-4 py-3">{inv.productName}</td>
-                    <td className="px-4 py-3 text-right">{inv.ticketsQuantity}</td>
-                    <td className="px-4 py-3 text-right font-medium">{formatMoney(inv.total)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </Card>
-
-      <CreateInvoiceDialog open={open} onOpenChange={setOpen} onCreated={refresh} />
-
-      <AlertDialog open={!!pendingDelete} onOpenChange={(o) => !o && setPendingDelete(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete invoice?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will permanently delete invoice{" "}
-              <span className="font-medium text-foreground">{pendingDelete?.invoiceNumber}</span>
-              {pendingDelete ? ` for ${pendingDelete.customerName}` : ""}. This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <CreateInvoiceDialog open={open} onOpenChange={setOpen} onCreated={() => {}} />
     </div>
   );
 }
