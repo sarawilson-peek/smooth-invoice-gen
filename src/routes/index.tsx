@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Plus, Receipt, Search, Copy, Check } from "lucide-react";
+import { Plus, Receipt, Search, Check, ExternalLink } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
