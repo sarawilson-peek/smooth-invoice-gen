@@ -204,17 +204,6 @@ function CreateInvoiceDialog({
       ? `${window.location.origin}/invoice/${generated.id}`
       : "";
 
-  const handleCopy = async () => {
-    if (!invoiceUrl) return;
-    try {
-      await navigator.clipboard.writeText(invoiceUrl);
-      setCopied(true);
-      toast.success("Invoice link copied");
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      toast.error("Couldn't copy link");
-    }
-  };
 
 
 
