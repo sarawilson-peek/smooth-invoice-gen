@@ -142,11 +142,6 @@ function CreateInvoiceDialog({
       toast.error("No booking found. Try BK-1001 – BK-1005.");
       return;
     }
-    const existing = loadInvoices().filter((i) => i.bookingId === b.id);
-    if (existing.length > 0) {
-      setDuplicateWarning({ booking: b, existing });
-      return;
-    }
     proceedWithBooking(b);
   };
 
