@@ -20,7 +20,7 @@ import { Toaster } from "@/components/ui/sonner";
 import {
   defaultSettings,
   loadSettings,
-  loadInvoices,
+  
   saveInvoice,
   findBooking,
   formatMoney,
