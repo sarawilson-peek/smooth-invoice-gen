@@ -128,7 +128,6 @@ function CreateInvoiceDialog({
       setOrganizationName("");
       setDuplicateWarning(null);
       setGenerated(null);
-      setCopied(false);
     }
   }, [open]);
 
