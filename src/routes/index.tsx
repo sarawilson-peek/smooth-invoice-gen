@@ -248,15 +248,12 @@ function CreateInvoiceDialog({
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="invoiceLink">Invoice link</Label>
-              <div className="flex gap-2">
-                <Input id="invoiceLink" value={invoiceUrl} readOnly onFocus={(e) => e.currentTarget.select()} />
-                <Button onClick={handleCopy} variant="outline">
-                  {copied ? <Check className="mr-2 h-4 w-4" /> : <Copy className="mr-2 h-4 w-4" />}
-                  {copied ? "Copied" : "Copy invoice link"}
-                </Button>
-              </div>
+            <div className="flex justify-center">
+              <Button asChild size="lg">
+                <a href={invoiceUrl} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="mr-2 h-4 w-4" /> View Invoice
+                </a>
+              </Button>
             </div>
           </div>
         ) : !booking ? (
