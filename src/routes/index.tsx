@@ -72,23 +72,7 @@ function Home() {
       </header>
 
       <main className="mx-auto max-w-6xl px-6 py-8">
-        <Tabs defaultValue="invoices" className="w-full">
-          <TabsList className="grid w-full max-w-sm grid-cols-2">
-            <TabsTrigger value="invoices">
-              <FileText className="mr-2 h-4 w-4" /> Invoices
-            </TabsTrigger>
-            <TabsTrigger value="settings">
-              <SettingsIcon className="mr-2 h-4 w-4" /> Settings
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="invoices" className="mt-6">
-            <InvoicesTab />
-          </TabsContent>
-          <TabsContent value="settings" className="mt-6">
-            <SettingsTab />
-          </TabsContent>
-        </Tabs>
+        <InvoicesTab />
       </main>
     </div>
   );
