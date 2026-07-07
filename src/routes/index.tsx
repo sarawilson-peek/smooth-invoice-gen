@@ -186,7 +186,9 @@ function CreateInvoiceDialog({
 
   const invoiceUrl =
     generated && typeof window !== "undefined"
-      ? `${window.location.origin}/invoice/${generated.id}`
+      ? `${window.location.origin}/invoice/${generated.id}#d=${encodeURIComponent(
+          btoa(unescape(encodeURIComponent(JSON.stringify(generated)))),
+        )}`
       : "";
 
 
