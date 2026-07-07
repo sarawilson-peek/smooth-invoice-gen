@@ -1,16 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Plus, Receipt, Search, Check, ExternalLink } from "lucide-react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,7 +20,7 @@ import { Toaster } from "@/components/ui/sonner";
 import {
   defaultSettings,
   loadSettings,
-  loadInvoices,
+  
   saveInvoice,
   findBooking,
   formatMoney,
@@ -115,7 +105,7 @@ function CreateInvoiceDialog({
   const [biz, setBiz] = useState<Settings>(defaultSettings);
   const [invoiceNumber, setInvoiceNumber] = useState("");
   const [organizationName, setOrganizationName] = useState("");
-  const [duplicateWarning, setDuplicateWarning] = useState<{ booking: Booking; existing: Invoice[] } | null>(null);
+  
   const [generated, setGenerated] = useState<Invoice | null>(null);
 
   useEffect(() => {
@@ -126,7 +116,7 @@ function CreateInvoiceDialog({
       setBiz(loadSettings());
       setInvoiceNumber(newInvoiceNumber());
       setOrganizationName("");
-      setDuplicateWarning(null);
+      
       setGenerated(null);
     }
   }, [open]);
@@ -140,11 +130,6 @@ function CreateInvoiceDialog({
     const b = findBooking(bookingIdInput);
     if (!b) {
       toast.error("No booking found. Try BK-1001 – BK-1005.");
-      return;
-    }
-    const existing = loadInvoices().filter((i) => i.bookingId === b.id);
-    if (existing.length > 0) {
-      setDuplicateWarning({ booking: b, existing });
       return;
     }
     proceedWithBooking(b);
@@ -385,36 +370,6 @@ function CreateInvoiceDialog({
           )}
         </DialogFooter>
       </DialogContent>
-
-      <AlertDialog open={!!duplicateWarning} onOpenChange={(o) => !o && setDuplicateWarning(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Invoice already exists</AlertDialogTitle>
-            <AlertDialogDescription>
-              {duplicateWarning && (
-                <>
-                  Booking{" "}
-                  <span className="font-medium text-foreground">{duplicateWarning.booking.id}</span>{" "}
-                  already has {duplicateWarning.existing.length}{" "}
-                  {duplicateWarning.existing.length === 1 ? "invoice" : "invoices"} (
-                  {duplicateWarning.existing.map((i) => i.invoiceNumber).join(", ")}). Would you like to create another one?
-                </>
-              )}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Go back</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                if (duplicateWarning) proceedWithBooking(duplicateWarning.booking);
-                setDuplicateWarning(null);
-              }}
-            >
-              Proceed anyway
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </Dialog>
   );
 }
