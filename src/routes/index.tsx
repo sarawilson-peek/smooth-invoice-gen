@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Plus, Receipt, Search, Copy, Check } from "lucide-react";
+import { Plus, Receipt, Search, Check, ExternalLink } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -117,7 +117,6 @@ function CreateInvoiceDialog({
   const [organizationName, setOrganizationName] = useState("");
   const [duplicateWarning, setDuplicateWarning] = useState<{ booking: Booking; existing: Invoice[] } | null>(null);
   const [generated, setGenerated] = useState<Invoice | null>(null);
-  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -129,7 +128,6 @@ function CreateInvoiceDialog({
       setOrganizationName("");
       setDuplicateWarning(null);
       setGenerated(null);
-      setCopied(false);
     }
   }, [open]);
 
@@ -206,17 +204,6 @@ function CreateInvoiceDialog({
       ? `${window.location.origin}/invoice/${generated.id}`
       : "";
 
-  const handleCopy = async () => {
-    if (!invoiceUrl) return;
-    try {
-      await navigator.clipboard.writeText(invoiceUrl);
-      setCopied(true);
-      toast.success("Invoice link copied");
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      toast.error("Couldn't copy link");
-    }
-  };
 
 
 
@@ -248,15 +235,12 @@ function CreateInvoiceDialog({
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="invoiceLink">Invoice link</Label>
-              <div className="flex gap-2">
-                <Input id="invoiceLink" value={invoiceUrl} readOnly onFocus={(e) => e.currentTarget.select()} />
-                <Button onClick={handleCopy} variant="outline">
-                  {copied ? <Check className="mr-2 h-4 w-4" /> : <Copy className="mr-2 h-4 w-4" />}
-                  {copied ? "Copied" : "Copy invoice link"}
-                </Button>
-              </div>
+            <div className="flex justify-center">
+              <Button asChild size="lg">
+                <a href={invoiceUrl} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="mr-2 h-4 w-4" /> View Invoice
+                </a>
+              </Button>
             </div>
           </div>
         ) : !booking ? (
