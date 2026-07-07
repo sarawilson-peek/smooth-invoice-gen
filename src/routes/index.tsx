@@ -224,11 +224,42 @@ function CreateInvoiceDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Create invoice</DialogTitle>
+          <DialogTitle>{generated ? "Invoice created" : "Create invoice"}</DialogTitle>
           <DialogDescription>
-            {booking ? "Review booking details and override business info if needed." : "Find a booking by ID to begin."}
+            {generated
+              ? "Copy the link below to share this invoice."
+              : booking
+              ? "Review booking details and override business info if needed."
+              : "Find a booking by ID to begin."}
           </DialogDescription>
         </DialogHeader>
+
+        {generated ? (
+          <div className="space-y-6 py-4">
+            <div className="flex flex-col items-center gap-3 text-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <Check className="h-7 w-7" />
+              </div>
+              <div>
+                <p className="text-lg font-semibold">Invoice {generated.invoiceNumber} is ready</p>
+                <p className="text-sm text-muted-foreground">
+                  For {generated.customerName} · {formatMoney(generated.total)}
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="invoiceLink">Invoice link</Label>
+              <div className="flex gap-2">
+                <Input id="invoiceLink" value={invoiceUrl} readOnly onFocus={(e) => e.currentTarget.select()} />
+                <Button onClick={handleCopy} variant="outline">
+                  {copied ? <Check className="mr-2 h-4 w-4" /> : <Copy className="mr-2 h-4 w-4" />}
+                  {copied ? "Copied" : "Copy invoice link"}
+                </Button>
+              </div>
+            </div>
+          </div>
+        ) : (
 
         {!booking ? (
           <div className="space-y-4 py-2">
