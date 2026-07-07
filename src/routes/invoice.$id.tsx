@@ -21,6 +21,20 @@ function InvoicePage() {
   const [inv, setInv] = useState<Invoice | null | undefined>(undefined);
 
   useEffect(() => {
+    // Prefer invoice payload from URL hash so cross-storage/new-tab opens work.
+    if (typeof window !== "undefined") {
+      const hash = window.location.hash;
+      const match = hash.match(/(?:^#|&)d=([^&]+)/);
+      if (match) {
+        try {
+          const json = decodeURIComponent(escape(atob(decodeURIComponent(match[1]))));
+          setInv(JSON.parse(json) as Invoice);
+          return;
+        } catch {
+          // fall through to storage lookup
+        }
+      }
+    }
     const found = getInvoice(id);
     setInv(found ?? null);
   }, [id]);
