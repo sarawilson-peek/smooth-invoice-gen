@@ -126,7 +126,7 @@ function CreateInvoiceDialog({
       setBiz(loadSettings());
       setInvoiceNumber(newInvoiceNumber());
       setOrganizationName("");
-      setDuplicateWarning(null);
+      
       setGenerated(null);
     }
   }, [open]);
