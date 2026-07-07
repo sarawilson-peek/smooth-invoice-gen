@@ -117,7 +117,6 @@ function CreateInvoiceDialog({
   const [organizationName, setOrganizationName] = useState("");
   const [duplicateWarning, setDuplicateWarning] = useState<{ booking: Booking; existing: Invoice[] } | null>(null);
   const [generated, setGenerated] = useState<Invoice | null>(null);
-  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (open) {
