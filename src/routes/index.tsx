@@ -259,9 +259,7 @@ function CreateInvoiceDialog({
               </div>
             </div>
           </div>
-        ) : (
-
-        {!booking ? (
+        ) : !booking ? (
           <div className="space-y-4 py-2">
             <div className="space-y-2">
               <Label htmlFor="bookingId">Booking ID</Label>
