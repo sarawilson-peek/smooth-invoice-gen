@@ -83,13 +83,15 @@ function InvoicesTab() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div>
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Invoices</h2>
-        <Button onClick={() => setOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" /> Create invoice
-        </Button>
-      </div>
+    <div className="flex min-h-[70vh] items-center justify-center">
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="group flex h-64 w-64 flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-primary/40 bg-primary/5 text-primary transition-colors hover:border-primary hover:bg-primary/10"
+      >
+        <Plus className="h-16 w-16 transition-transform group-hover:scale-110" />
+        <span className="text-lg font-semibold">Create invoice</span>
+      </button>
 
       <CreateInvoiceDialog open={open} onOpenChange={setOpen} onCreated={() => {}} />
     </div>
