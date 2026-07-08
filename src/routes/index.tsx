@@ -464,9 +464,14 @@ function CreateInvoiceDialog({
           </div>
         ) : null}
 
-        <DialogFooter>
+        <DialogFooter className="print:hidden">
           {generated ? (
-            <Button onClick={() => onOpenChange(false)}>Done</Button>
+            <>
+              <Button variant="outline" onClick={() => onOpenChange(false)}>Close</Button>
+              <Button onClick={() => window.print()}>
+                <Printer className="mr-2 h-4 w-4" /> Print / Save as PDF
+              </Button>
+            </>
           ) : (
             <>
               <Button variant="outline" onClick={() => onOpenChange(false)}>
