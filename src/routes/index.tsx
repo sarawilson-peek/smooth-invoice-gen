@@ -203,11 +203,29 @@ function CreateInvoiceDialog({
           <div className="space-y-4 py-2">
             <style>{`
               @media print {
+                @page { margin: 12mm; }
+                html, body { margin: 0 !important; padding: 0 !important; background: white !important; }
                 body * { visibility: hidden !important; }
+                [role="dialog"] {
+                  position: static !important;
+                  transform: none !important;
+                  inset: auto !important;
+                  max-width: none !important;
+                  width: auto !important;
+                  max-height: none !important;
+                  height: auto !important;
+                  overflow: visible !important;
+                  border: 0 !important;
+                  box-shadow: none !important;
+                  padding: 0 !important;
+                  margin: 0 !important;
+                  background: white !important;
+                }
                 #invoice-print-area, #invoice-print-area * { visibility: visible !important; }
-                #invoice-print-area { position: absolute; left: 0; top: 0; width: 100%; padding: 24px; }
+                #invoice-print-area { position: static !important; margin: 0 !important; padding: 0 !important; }
               }
             `}</style>
+
 
             <div id="invoice-print-area" className="rounded-xl border bg-card p-8 print:border-0 print:p-0">
               {/* Header */}
