@@ -485,7 +485,20 @@ function CreateInvoiceDialog({
         <DialogFooter className="print:hidden">
           {generated ? (
             <>
-              <Button variant="outline" onClick={() => onOpenChange(false)}>Close</Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  if (
+                    window.confirm(
+                      "Are you sure? Once you close this you won't be able to access this invoice again — you'll need to create a new one."
+                    )
+                  ) {
+                    onOpenChange(false);
+                  }
+                }}
+              >
+                Close
+              </Button>
               <Button onClick={() => window.print()}>
                 <Printer className="mr-2 h-4 w-4" /> Print / Save as PDF
               </Button>
