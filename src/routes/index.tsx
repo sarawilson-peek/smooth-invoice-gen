@@ -185,7 +185,21 @@ function CreateInvoiceDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        if (!v && generated) {
+          if (
+            !window.confirm(
+              "Are you sure? Once you close this you won't be able to access this invoice again — you'll need to create a new one."
+            )
+          ) {
+            return;
+          }
+        }
+        onOpenChange(v);
+      }}
+    >
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl print:max-h-none print:overflow-visible print:border-0 print:shadow-none">
 
         <DialogHeader className="print:hidden">
@@ -485,7 +499,20 @@ function CreateInvoiceDialog({
         <DialogFooter className="print:hidden">
           {generated ? (
             <>
-              <Button variant="outline" onClick={() => onOpenChange(false)}>Close</Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  if (
+                    window.confirm(
+                      "Are you sure? Once you close this you won't be able to access this invoice again — you'll need to create a new one."
+                    )
+                  ) {
+                    onOpenChange(false);
+                  }
+                }}
+              >
+                Close
+              </Button>
               <Button onClick={() => window.print()}>
                 <Printer className="mr-2 h-4 w-4" /> Print / Save as PDF
               </Button>
