@@ -184,19 +184,10 @@ function CreateInvoiceDialog({
     onCreated();
   };
 
-  const invoiceUrl =
-    generated && typeof window !== "undefined"
-      ? `${window.location.origin}/invoice/${generated.id}#d=${encodeURIComponent(
-          btoa(unescape(encodeURIComponent(JSON.stringify(generated)))),
-        )}`
-      : "";
-
-
-
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl print:max-h-none print:overflow-visible print:border-0 print:shadow-none">
+
         <DialogHeader className="print:hidden">
           <DialogTitle>{generated ? "Invoice created" : "Create invoice"}</DialogTitle>
           <DialogDescription>
