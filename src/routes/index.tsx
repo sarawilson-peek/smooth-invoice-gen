@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Plus, Receipt, Search, Check, ExternalLink } from "lucide-react";
+import { Plus, Receipt, Search, Printer, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -184,24 +184,15 @@ function CreateInvoiceDialog({
     onCreated();
   };
 
-  const invoiceUrl =
-    generated && typeof window !== "undefined"
-      ? `${window.location.origin}/invoice/${generated.id}#d=${encodeURIComponent(
-          btoa(unescape(encodeURIComponent(JSON.stringify(generated)))),
-        )}`
-      : "";
-
-
-
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
-        <DialogHeader>
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl print:max-h-none print:overflow-visible print:border-0 print:shadow-none">
+
+        <DialogHeader className="print:hidden">
           <DialogTitle>{generated ? "Invoice created" : "Create invoice"}</DialogTitle>
           <DialogDescription>
             {generated
-              ? "Copy the link below to share this invoice."
+              ? "Review the invoice below. Print or save as PDF to share."
               : booking
               ? "Review booking details and override business info if needed."
               : "Find a booking by ID to begin."}
@@ -209,25 +200,139 @@ function CreateInvoiceDialog({
         </DialogHeader>
 
         {generated ? (
-          <div className="space-y-6 py-4">
-            <div className="flex flex-col items-center gap-3 text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary">
-                <Check className="h-7 w-7" />
-              </div>
-              <div>
-                <p className="text-lg font-semibold">Invoice {generated.invoiceNumber} is ready</p>
-                <p className="text-sm text-muted-foreground">
-                  For {generated.customerName} · {formatMoney(generated.total)}
-                </p>
-              </div>
-            </div>
+          <div className="space-y-4 py-2">
+            <style>{`
+              @media print {
+                body * { visibility: hidden !important; }
+                #invoice-print-area, #invoice-print-area * { visibility: visible !important; }
+                #invoice-print-area { position: absolute; left: 0; top: 0; width: 100%; padding: 24px; }
+              }
+            `}</style>
 
-            <div className="flex justify-center">
-              <Button asChild size="lg">
-                <a href={invoiceUrl} target="_blank" rel="noopener noreferrer">
-                  <ExternalLink className="mr-2 h-4 w-4" /> View Invoice
-                </a>
-              </Button>
+            <div id="invoice-print-area" className="rounded-xl border bg-card p-8 print:border-0 print:p-0">
+              {/* Header */}
+              <header className="flex items-start justify-between gap-6 border-b pb-6">
+                <div className="flex items-start gap-4">
+                  {generated.business.logo ? (
+                    <img src={generated.business.logo} alt="Logo" className="h-14 w-14 object-contain" />
+                  ) : null}
+                  <div>
+                    <h2 className="text-lg font-semibold">{generated.business.name || "Your Business"}</h2>
+                    {generated.business.id && (
+                      <p className="text-xs text-muted-foreground">ID: {generated.business.id}</p>
+                    )}
+                    {generated.business.address && (
+                      <p className="mt-1 whitespace-pre-line text-xs text-muted-foreground">
+                        {generated.business.address}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Invoice</p>
+                  <p className="text-xl font-semibold text-primary">{generated.invoiceNumber}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Issued {new Date(generated.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+              </header>
+
+              {/* Bill to / Booking card */}
+              <section className="mt-5 grid grid-cols-2 gap-4 rounded-lg border bg-muted/30 p-4 text-sm">
+                <div className="flex items-start gap-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-md bg-background text-muted-foreground">
+                    <Receipt className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Bill to</p>
+                    {generated.organizationName && (
+                      <p className="font-semibold">{generated.organizationName}</p>
+                    )}
+                    <p className={generated.organizationName ? "text-muted-foreground" : "font-semibold"}>
+                      {generated.customerName}
+                    </p>
+                    <p className="text-xs text-muted-foreground">{generated.customerEmail}</p>
+                    <p className="text-xs text-muted-foreground">{generated.customerPhone}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-md bg-background text-muted-foreground">
+                    <Calendar className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Booking</p>
+                    <p className="font-semibold">{generated.bookingId}</p>
+                    <p className="text-xs text-muted-foreground">
+                      Activity: {new Date(generated.activityDate).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+              </section>
+
+              {/* Line items */}
+              <section className="mt-6 overflow-hidden rounded-lg border">
+                <table className="w-full text-sm">
+                  <thead className="bg-muted/50">
+                    <tr className="text-left">
+                      <th className="px-4 py-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Ticket</th>
+                      <th className="px-4 py-2 text-right text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Qty</th>
+                      <th className="px-4 py-2 text-right text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Price</th>
+                      <th className="px-4 py-2 text-right text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-b bg-background">
+                      <td colSpan={4} className="px-4 py-2 font-semibold">{generated.productName}</td>
+                    </tr>
+                    {generated.items && generated.items.length > 0 ? (
+                      generated.items.map((it, idx) => (
+                        <tr key={idx} className="border-b last:border-0">
+                          <td className="px-4 py-3 pl-8">{it.name}</td>
+                          <td className="px-4 py-3 text-right">{it.quantity}</td>
+                          <td className="px-4 py-3 text-right">{formatMoney(it.price)}</td>
+                          <td className="px-4 py-3 text-right font-semibold">{formatMoney(it.quantity * it.price)}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr className="border-b last:border-0">
+                        <td className="px-4 py-3 pl-8">Ticket</td>
+                        <td className="px-4 py-3 text-right">{generated.ticketsQuantity}</td>
+                        <td className="px-4 py-3 text-right">{formatMoney(generated.ticketPrice)}</td>
+                        <td className="px-4 py-3 text-right font-semibold">{formatMoney(generated.subtotal)}</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </section>
+
+              {/* Totals */}
+              <section className="mt-4 flex justify-end">
+                <div className="w-full max-w-xs space-y-1.5 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Subtotal</span>
+                    <span>{formatMoney(generated.subtotal)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Taxes & fees</span>
+                    <span>{formatMoney(generated.taxesAndFees)}</span>
+                  </div>
+                  <div className="flex justify-between border-t pt-2 font-semibold">
+                    <span>Total</span>
+                    <span>{formatMoney(generated.total)}</span>
+                  </div>
+                  <div className="flex justify-between rounded-md bg-primary/10 px-3 py-2 text-primary">
+                    <span className="font-semibold">Amount due</span>
+                    <span className="font-semibold">{formatMoney(generated.amountDue)}</span>
+                  </div>
+                </div>
+              </section>
+
+              {generated.business.notes && (
+                <section className="mt-6 border-t pt-4">
+                  <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Notes</p>
+                  <p className="whitespace-pre-line text-sm">{generated.business.notes}</p>
+                </section>
+              )}
             </div>
           </div>
         ) : !booking ? (
@@ -359,9 +464,14 @@ function CreateInvoiceDialog({
           </div>
         ) : null}
 
-        <DialogFooter>
+        <DialogFooter className="print:hidden">
           {generated ? (
-            <Button onClick={() => onOpenChange(false)}>Done</Button>
+            <>
+              <Button variant="outline" onClick={() => onOpenChange(false)}>Close</Button>
+              <Button onClick={() => window.print()}>
+                <Printer className="mr-2 h-4 w-4" /> Print / Save as PDF
+              </Button>
+            </>
           ) : (
             <>
               <Button variant="outline" onClick={() => onOpenChange(false)}>
