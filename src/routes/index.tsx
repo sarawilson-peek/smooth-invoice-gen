@@ -1,6 +1,16 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Plus, Receipt, Search, Printer, Calendar } from "lucide-react";
+import { Plus, Receipt, Search } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,7 +30,7 @@ import { Toaster } from "@/components/ui/sonner";
 import {
   defaultSettings,
   loadSettings,
-  
+  loadInvoices,
   saveInvoice,
   findBooking,
   formatMoney,
@@ -73,15 +83,13 @@ function InvoicesTab() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="flex min-h-[70vh] items-center justify-center">
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="group flex h-64 w-64 flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-primary/40 bg-primary/5 text-primary transition-colors hover:border-primary hover:bg-primary/10"
-      >
-        <Plus className="h-16 w-16 transition-transform group-hover:scale-110" />
-        <span className="text-lg font-semibold">Create invoice</span>
-      </button>
+    <div>
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="text-xl font-semibold">Invoices</h2>
+        <Button onClick={() => setOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" /> Create invoice
+        </Button>
+      </div>
 
       <CreateInvoiceDialog open={open} onOpenChange={setOpen} onCreated={() => {}} />
     </div>
@@ -105,8 +113,7 @@ function CreateInvoiceDialog({
   const [biz, setBiz] = useState<Settings>(defaultSettings);
   const [invoiceNumber, setInvoiceNumber] = useState("");
   const [organizationName, setOrganizationName] = useState("");
-  
-  const [generated, setGenerated] = useState<Invoice | null>(null);
+  const [duplicateWarning, setDuplicateWarning] = useState<{ booking: Booking; existing: Invoice[] } | null>(null);
 
   useEffect(() => {
     if (open) {
@@ -116,8 +123,7 @@ function CreateInvoiceDialog({
       setBiz(loadSettings());
       setInvoiceNumber(newInvoiceNumber());
       setOrganizationName("");
-      
-      setGenerated(null);
+      setDuplicateWarning(null);
     }
   }, [open]);
 
@@ -130,6 +136,11 @@ function CreateInvoiceDialog({
     const b = findBooking(bookingIdInput);
     if (!b) {
       toast.error("No booking found. Try BK-1001 – BK-1005.");
+      return;
+    }
+    const existing = loadInvoices().filter((i) => i.bookingId === b.id);
+    if (existing.length > 0) {
+      setDuplicateWarning({ booking: b, existing });
       return;
     }
     proceedWithBooking(b);
@@ -180,194 +191,23 @@ function CreateInvoiceDialog({
       },
     };
     saveInvoice(inv);
-    setGenerated(inv);
+    toast.success("Invoice generated");
     onCreated();
+    onOpenChange(false);
   };
 
-  return (
-    <Dialog
-      open={open}
-      onOpenChange={(v) => {
-        if (!v && generated) {
-          if (
-            !window.confirm(
-              "Are you sure? Once you close this you won't be able to access this invoice again — you'll need to create a new one."
-            )
-          ) {
-            return;
-          }
-        }
-        onOpenChange(v);
-      }}
-    >
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl print:max-h-none print:overflow-visible print:border-0 print:shadow-none">
 
-        <DialogHeader className="print:hidden">
-          <DialogTitle>{generated ? "Invoice created" : "Create invoice"}</DialogTitle>
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Create invoice</DialogTitle>
           <DialogDescription>
-            {generated
-              ? "Review the invoice below. Print or save as PDF to share."
-              : booking
-              ? "Review booking details and override business info if needed."
-              : "Find a booking by ID to begin."}
+            {booking ? "Review booking details and override business info if needed." : "Find a booking by ID to begin."}
           </DialogDescription>
         </DialogHeader>
 
-        {generated ? (
-          <div className="space-y-4 py-2">
-            <style>{`
-              @media print {
-                @page { margin: 12mm; }
-                html, body { margin: 0 !important; padding: 0 !important; background: white !important; }
-                body * { visibility: hidden !important; }
-                [role="dialog"] {
-                  position: static !important;
-                  transform: none !important;
-                  inset: auto !important;
-                  max-width: none !important;
-                  width: auto !important;
-                  max-height: none !important;
-                  height: auto !important;
-                  overflow: visible !important;
-                  border: 0 !important;
-                  box-shadow: none !important;
-                  padding: 0 !important;
-                  margin: 0 !important;
-                  background: white !important;
-                }
-                #invoice-print-area, #invoice-print-area * { visibility: visible !important; }
-                #invoice-print-area { position: static !important; margin: 0 !important; padding: 0 !important; }
-              }
-            `}</style>
-
-
-            <div id="invoice-print-area" className="rounded-xl border bg-card p-8 print:border-0 print:p-0">
-              {/* Header */}
-              <header className="flex items-start justify-between gap-6 border-b pb-6">
-                <div className="flex items-start gap-4">
-                  {generated.business.logo ? (
-                    <img src={generated.business.logo} alt="Logo" className="h-14 w-14 object-contain" />
-                  ) : null}
-                  <div>
-                    <h2 className="text-lg font-semibold">{generated.business.name || "Your Business"}</h2>
-                    {generated.business.id && (
-                      <p className="text-xs text-muted-foreground">ID: {generated.business.id}</p>
-                    )}
-                    {generated.business.address && (
-                      <p className="mt-1 whitespace-pre-line text-xs text-muted-foreground">
-                        {generated.business.address}
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Invoice</p>
-                  <p className="text-xl font-semibold text-primary">{generated.invoiceNumber}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Issued {new Date(generated.createdAt).toLocaleDateString()}
-                  </p>
-                </div>
-              </header>
-
-              {/* Bill to / Booking card */}
-              <section className="mt-5 grid grid-cols-2 gap-4 rounded-lg border bg-muted/30 p-4 text-sm">
-                <div className="flex items-start gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-md bg-background text-muted-foreground">
-                    <Receipt className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Bill to</p>
-                    {generated.organizationName && (
-                      <p className="font-semibold">{generated.organizationName}</p>
-                    )}
-                    <p className={generated.organizationName ? "text-muted-foreground" : "font-semibold"}>
-                      {generated.customerName}
-                    </p>
-                    <p className="text-xs text-muted-foreground">{generated.customerEmail}</p>
-                    <p className="text-xs text-muted-foreground">{generated.customerPhone}</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-md bg-background text-muted-foreground">
-                    <Calendar className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Booking</p>
-                    <p className="font-semibold">{generated.bookingId}</p>
-                    <p className="text-xs text-muted-foreground">
-                      Activity: {new Date(generated.activityDate).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
-              </section>
-
-              {/* Line items */}
-              <section className="mt-6 overflow-hidden rounded-lg border">
-                <table className="w-full text-sm">
-                  <thead className="bg-muted/50">
-                    <tr className="text-left">
-                      <th className="px-4 py-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Ticket</th>
-                      <th className="px-4 py-2 text-right text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Qty</th>
-                      <th className="px-4 py-2 text-right text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Price</th>
-                      <th className="px-4 py-2 text-right text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Total</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="border-b bg-background">
-                      <td colSpan={4} className="px-4 py-2 font-semibold">{generated.productName}</td>
-                    </tr>
-                    {generated.items && generated.items.length > 0 ? (
-                      generated.items.map((it, idx) => (
-                        <tr key={idx} className="border-b last:border-0">
-                          <td className="px-4 py-3 pl-8">{it.name}</td>
-                          <td className="px-4 py-3 text-right">{it.quantity}</td>
-                          <td className="px-4 py-3 text-right">{formatMoney(it.price)}</td>
-                          <td className="px-4 py-3 text-right font-semibold">{formatMoney(it.quantity * it.price)}</td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr className="border-b last:border-0">
-                        <td className="px-4 py-3 pl-8">Ticket</td>
-                        <td className="px-4 py-3 text-right">{generated.ticketsQuantity}</td>
-                        <td className="px-4 py-3 text-right">{formatMoney(generated.ticketPrice)}</td>
-                        <td className="px-4 py-3 text-right font-semibold">{formatMoney(generated.subtotal)}</td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </section>
-
-              {/* Totals */}
-              <section className="mt-4 flex justify-end">
-                <div className="w-full max-w-xs space-y-1.5 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Subtotal</span>
-                    <span>{formatMoney(generated.subtotal)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Taxes & fees</span>
-                    <span>{formatMoney(generated.taxesAndFees)}</span>
-                  </div>
-                  <div className="flex justify-between border-t pt-2 font-semibold">
-                    <span>Total</span>
-                    <span>{formatMoney(generated.total)}</span>
-                  </div>
-                  <div className="flex justify-between rounded-md bg-primary/10 px-3 py-2 text-primary">
-                    <span className="font-semibold">Amount due</span>
-                    <span className="font-semibold">{formatMoney(generated.amountDue)}</span>
-                  </div>
-                </div>
-              </section>
-
-              {generated.business.notes && (
-                <section className="mt-6 border-t pt-4">
-                  <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Notes</p>
-                  <p className="whitespace-pre-line text-sm">{generated.business.notes}</p>
-                </section>
-              )}
-            </div>
-          </div>
-        ) : !booking ? (
+        {!booking ? (
           <div className="space-y-4 py-2">
             <div className="space-y-2">
               <Label htmlFor="bookingId">Booking ID</Label>
@@ -496,37 +336,45 @@ function CreateInvoiceDialog({
           </div>
         ) : null}
 
-        <DialogFooter className="print:hidden">
-          {generated ? (
-            <>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  if (
-                    window.confirm(
-                      "Are you sure? Once you close this you won't be able to access this invoice again — you'll need to create a new one."
-                    )
-                  ) {
-                    onOpenChange(false);
-                  }
-                }}
-              >
-                Close
-              </Button>
-              <Button onClick={() => window.print()}>
-                <Printer className="mr-2 h-4 w-4" /> Print / Save as PDF
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button variant="outline" onClick={() => onOpenChange(false)}>
-                Cancel
-              </Button>
-              {booking && <Button onClick={handleGenerate}>Generate</Button>}
-            </>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Cancel
+          </Button>
+          {booking && (
+            <Button onClick={handleGenerate}>Generate</Button>
           )}
         </DialogFooter>
       </DialogContent>
+
+      <AlertDialog open={!!duplicateWarning} onOpenChange={(o) => !o && setDuplicateWarning(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Invoice already exists</AlertDialogTitle>
+            <AlertDialogDescription>
+              {duplicateWarning && (
+                <>
+                  Booking{" "}
+                  <span className="font-medium text-foreground">{duplicateWarning.booking.id}</span>{" "}
+                  already has {duplicateWarning.existing.length}{" "}
+                  {duplicateWarning.existing.length === 1 ? "invoice" : "invoices"} (
+                  {duplicateWarning.existing.map((i) => i.invoiceNumber).join(", ")}). Would you like to create another one?
+                </>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Go back</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (duplicateWarning) proceedWithBooking(duplicateWarning.booking);
+                setDuplicateWarning(null);
+              }}
+            >
+              Proceed anyway
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 }
