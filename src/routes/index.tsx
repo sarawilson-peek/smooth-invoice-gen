@@ -81,6 +81,9 @@ function Home() {
 
 function InvoicesTab() {
   const [open, setOpen] = useState(false);
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const refresh = () => setInvoices(loadInvoices());
+  useEffect(refresh, []);
 
   return (
     <div>
@@ -91,7 +94,52 @@ function InvoicesTab() {
         </Button>
       </div>
 
-      <CreateInvoiceDialog open={open} onOpenChange={setOpen} onCreated={() => {}} />
+      <div className="overflow-x-auto rounded-lg border">
+        <table className="w-full text-sm">
+          <thead className="bg-muted/50 text-left text-muted-foreground">
+            <tr>
+              <th className="px-4 py-2 font-medium">Invoice #</th>
+              <th className="px-4 py-2 font-medium">Created</th>
+              <th className="px-4 py-2 font-medium">Booking ID</th>
+              <th className="px-4 py-2 font-medium">Activity date</th>
+              <th className="px-4 py-2 font-medium">Customer</th>
+              <th className="px-4 py-2 font-medium">Product</th>
+              <th className="px-4 py-2 text-right font-medium">Total</th>
+              <th className="px-4 py-2" />
+            </tr>
+          </thead>
+          <tbody>
+            {invoices.length === 0 ? (
+              <tr>
+                <td colSpan={8} className="px-4 py-10 text-center text-muted-foreground">
+                  No invoices yet. Click "Create invoice" to get started.
+                </td>
+              </tr>
+            ) : (
+              invoices.map((inv) => (
+                <tr key={inv.id} className="border-t hover:bg-muted/30">
+                  <td className="px-4 py-3 font-medium">{inv.invoiceNumber}</td>
+                  <td className="px-4 py-3">{new Date(inv.createdAt).toLocaleString()}</td>
+                  <td className="px-4 py-3">{inv.bookingId}</td>
+                  <td className="px-4 py-3">{inv.activityDate}</td>
+                  <td className="px-4 py-3">{inv.customerName}</td>
+                  <td className="px-4 py-3">{inv.productName}</td>
+                  <td className="px-4 py-3 text-right">{formatMoney(inv.total)}</td>
+                  <td className="px-4 py-3 text-right">
+                    <Button asChild size="sm" variant="outline">
+                      <Link to="/invoice/$id" params={{ id: inv.id }} target="_blank">
+                        Open
+                      </Link>
+                    </Button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      <CreateInvoiceDialog open={open} onOpenChange={setOpen} onCreated={refresh} />
     </div>
   );
 }
